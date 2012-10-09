@@ -6,38 +6,38 @@
 
 % bateaux joueur 1 (id, ligne, colonne) : humain
 
-/*% bateau 1 : 2 cases
-bateau_joueur1(0, 5, 5).
-bateau_joueur1(0, 5, 6).
+% bateau 1 : 2 cases
+bateau_joueur1(0, 1, 5).
+bateau_joueur1(0, 1, 6).
 
 % bateau 2 : 3 cases
-bateau_joueur1(1, 7, 4).
-bateau_joueur1(1, 7, 5).
-bateau_joueur1(1, 7, 6).
+bateau_joueur1(1, 3, 5).
+bateau_joueur1(1, 4, 5).
+bateau_joueur1(1, 5, 5).
 
 % bateau 3 : 3 cases
-bateau_joueur1(2, 8, 10).
-bateau_joueur1(2, 9, 10).
-bateau_joueur1(2, 10, 10).
+bateau_joueur1(2, 3, 7).
+bateau_joueur1(2, 4, 7).
+bateau_joueur1(2, 5, 7).
 
 % bateau 4 : 4 cases
-bateau_joueur1(3, 2, 2).
-bateau_joueur1(3, 3, 2).
-bateau_joueur1(3, 4, 2).
-bateau_joueur1(3, 5, 2).
+bateau_joueur1(3, 2, 6).
+bateau_joueur1(3, 3, 6).
+bateau_joueur1(3, 4, 6).
+bateau_joueur1(3, 5, 6).
 
 % bateau 5 : 5 cases
 bateau_joueur1(4, 6, 4).
 bateau_joueur1(4, 6, 5).
 bateau_joueur1(4, 6, 6).
 bateau_joueur1(4, 6, 7).
-bateau_joueur1(4, 6, 8).*/
+bateau_joueur1(4, 6, 8).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %choix du placement des bateaux par l utilisateur
 
 % bateaux joueur 1 (id, ligne, colonne) : humain
-:- dynamic(bateau_joueur1/3).
+%:- dynamic(bateau_joueur1/3).
 
 positionner_tous:-positionner_t2,positionner_t3,positionner_t3Bis,positionner_t4,positionner_t5.
 
@@ -144,6 +144,8 @@ couler_joueur2(Id), write('\nCoulé !'), retractall(bateaux_touches_joueur2(Id, _
 % on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
 couler_joueur2(Id) :- forall(bateau_joueur1(Id, X, Y), coups_tires_joueur2(X, Y)).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % construit la liste des points adjacents à X et Y sous la forme [[X+1, Y], [X-1, Y], [X, Y+1], [X-1, Y-1]]
 adjacent(X, Y, [[XPlus, Y], [XMinus, Y], [X, YPlus], [X, YMinus]]) :- XMinus is X - 1, XPlus is X + 1, YMinus is Y - 1, YPlus is Y + 1.
 
@@ -155,26 +157,39 @@ subtract(LAdj, [[0, _], [_, 0], [11, _], [_, 11]|LCoupsTires], [[XFinal, YFinal]
 tirer_joueur2(XFinal, YFinal).
 
 % lorsqu'il y en a plusieurs, on prend le premier et on cherche un alignement par rapport à ce point
-strategie_tir([[X, Y]|_]) :- findall(XDiff, (bateaux_touches_joueur2(_, XDiff, Y), XDiff\==X), XTouches), findall(YDiff, (bateaux_touches_joueur2(_, X, YDiff), YDiff\==Y), YTouches),
+strategie_tir([[X, Y], [_, _]|_]) :- findall(XDiff, (bateaux_touches_joueur2(_, XDiff, Y), XDiff\==X), XTouches), findall(YDiff, (bateaux_touches_joueur2(_, X, YDiff), YDiff\==Y), YTouches),
 evaluer_alignement([X, Y], XTouches, YTouches).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+evaluer_alignement([X, Y], [], []) :- strategie_tir([[X, Y]]).
+
 % alignement vertical : on essaye de tirer au delà des extrémités verticales
-evaluer_alignement([X, Y], XTouches, []) :- max_list([X|XTouches], XMax), min_list([X|XTouches], XMin), XSup is XMax + 1, XInf is XMin - 1,
+evaluer_alignement([X, Y], [T1|Q1], []) :- max_list([X|[T1|Q1]], XMax), min_list([X|[T1|Q1]], XMin), XSup is XMax + 1, XInf is XMin - 1,
 findall(X2, coups_tires_joueur2(X2, Y), XTires),
 subtract([XSup,XInf], [0, 11 | XTires], XTrouves),
 evaluer_tir([X, Y], XTrouves, []).
 
 % alignement horizontal : on essaye de tirer au delà des extrémités horizontales
-evaluer_alignement([X, Y], [], YTouches) :- max_list([Y|YTouches], YMax), min_list([Y|YTouches], YMin), YSup is YMax + 1, YInf is YMin - 1,
+evaluer_alignement([X, Y], [], [T2|Q2]) :- max_list([Y|[T2|Q2]], YMax), min_list([Y|[T2|Q2]], YMin), YSup is YMax + 1, YInf is YMin - 1,
 findall(Y2, coups_tires_joueur2(X, Y2), YTires),
 subtract([YSup,YInf], [0, 11 | YTires], YTrouves),
 evaluer_tir([X, Y], [], YTrouves).
 
 % cas particulier : double alignement
-evaluer_alignement(Point, [_|_], [_|_]) :- write('both : TODO').
+evaluer_alignement([X, Y], [T1|Q1], [T2|Q2]) :- max_list([X|[T1|Q1]], XMax), min_list([X|[T1|Q1]], XMin), XSup is XMax + 1, XInf is XMin - 1,
+findall(X2, coups_tires_joueur2(X2, Y), XTires),
+subtract([XSup,XInf], [0, 11 | XTires], XTrouves),
+max_list([Y|[T2|Q2]], YMax), min_list([Y|[T2|Q2]], YMin), YSup is YMax + 1, YInf is YMin - 1,
+findall(Y2, coups_tires_joueur2(X, Y2), YTires),
+subtract([YSup,YInf], [0, 11 | YTires], YTrouves),
+evaluer_tir([X, Y], XTrouves, YTrouves).
 
-% pas de tirs possibles aux extrémités des alignements, on applique la 1ère stratégie
-evaluer_tir([X, Y], [], []) :- strategie([[X, Y]]).
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% évaluation des tirs
+
+evaluer_tir([X, Y], [], []) :- strategie_tir([[X, Y]]).
 
 evaluer_tir([_, Y], [XChoisi|_], []) :- tirer_joueur2(XChoisi, Y).
 
