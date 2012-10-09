@@ -1,52 +1,96 @@
 % matrice 10 * 10 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Humain%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % bateaux joueur 1 (id, ligne, colonne) : humain
 
-% bateau 1 : 2 cases
-bateau_joueur1(0, 5, 4).
+/*% bateau 1 : 2 cases
 bateau_joueur1(0, 5, 5).
+bateau_joueur1(0, 5, 6).
 
 % bateau 2 : 3 cases
+bateau_joueur1(1, 7, 4).
 bateau_joueur1(1, 7, 5).
 bateau_joueur1(1, 7, 6).
-bateau_joueur1(1, 7, 7).
 
 % bateau 3 : 3 cases
-bateau_joueur1(2, 7, 4).
-bateau_joueur1(2, 8, 4).
-bateau_joueur1(2, 9, 4).
+bateau_joueur1(2, 8, 10).
+bateau_joueur1(2, 9, 10).
+bateau_joueur1(2, 10, 10).
 
 % bateau 4 : 4 cases
-bateau_joueur1(3, 3, 3).
-bateau_joueur1(3, 4, 3).
-bateau_joueur1(3, 5, 3).
-bateau_joueur1(3, 6, 3).
+bateau_joueur1(3, 2, 2).
+bateau_joueur1(3, 3, 2).
+bateau_joueur1(3, 4, 2).
+bateau_joueur1(3, 5, 2).
 
 % bateau 5 : 5 cases
 bateau_joueur1(4, 6, 4).
 bateau_joueur1(4, 6, 5).
 bateau_joueur1(4, 6, 6).
 bateau_joueur1(4, 6, 7).
-bateau_joueur1(4, 6, 8).
+bateau_joueur1(4, 6, 8).*/
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%choix du placement des bateaux par l utilisateur
+
+% bateaux joueur 1 (id, ligne, colonne) : humain
+:- dynamic(bateau_joueur1/3).
+
+positionner_tous:-positionner_t2,positionner_t3,positionner_t3Bis,positionner_t4,positionner_t5.
+
+positionner_t2:-write('Bateau de taille 2\n'),write('Dans quelle direction voulez vous placer le bateau Verticale/Horizontale(1/0)?\n'),read(Rep),Rep==0,positionner_bateauH(2,1).
+positionner_t2:-positionner_bateauV(2,1).
+
+positionner_t3:-write('Bateau de taille 3\n'),write('Dans quelle direction voulez vous placer le bateau Verticale/Horizontale(1/0)?\n'),read(Rep),Rep==0,positionner_bateauH(3,2).
+positionner_t3:-positionner_bateauV(3,2).
+
+positionner_t3Bis:-write('Bateau de taille 3 2eme\n'),write('Dans quelle direction voulez vous placer le bateau Verticale/Horizontale(1/0)?\n'),read(Rep),Rep==0,positionner_bateauH(3,3).
+positionner_t3Bis:-positionner_bateauV(3,3).
+
+positionner_t4:-write('Bateau de taille 4\n'),write('Dans quelle direction voulez vous placer le bateau Verticale/Horizontale(1/0)?\n'),read(Rep),Rep==0,positionner_bateauH(4,4).
+positionner_t4:-positionner_bateauV(4,4).
+
+positionner_t5:-write('Bateau de taille 5\n'),write('Dans quelle direction voulez vous placer le bateau Verticale/Horizontale(1/0)?\n'),read(Rep),Rep==0,positionner_bateauH(5,5).
+positionner_t5:-positionner_bateauV(5,5).
+
+%%%%% Positonnement horizontal d un bateau
+positionner_bateauH(T,Id):-write('Sur quelle ligne voulez vous placer le bateau ?\n'),read(L),write('Sur quelle colonne?\n'),read(C),Cbis is C + -1,positionner_pt_bateauH(Id,L,Cbis,T).
+positionner_bateauH(T,Id):-retract(bateau_joueur1(Id,X,Y)),positionner_bateauH(T,Id).
+
+positionner_pt_bateauH(Id,X,Y,T):-T<1.
+positionner_pt_bateauH(Id,X,Y,T):-Ybis is Y+1,T2 is T-1, Ybis<11,assert(bateau_joueur1(Id,X,Ybis)),positionner_pt_bateauH(Id,X,Ybis,T2).
+positionner_pt_bateauH(Id,X,Y,T):-write('Placement hors du terrain\n'),false.
+
+
+%%%%% Positonnement vertical d un bateau
+positionner_bateauV(T,Id):-write('Sur quelle colonne voulez vous placer le bateau ?\n'),read(C),write('Sur quelle ligne?\n'),read(L),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
+positionner_bateauV(T,Id):-retract(bateau_joueur1(Id,X,Y)),positionner_bateauV(T,Id).
+
+positionner_pt_bateauV(Id,X,Y,T):-T<1.
+positionner_pt_bateauV(Id,X,Y,T):-Xbis is X+1,T2 is T-1, Xbis<11,not(bateau_joueur1(_,Xbis,Y)),assert(bateau_joueur1(Id,Xbis,Y)),positionner_pt_bateauV(Id,Xbis,Y,T2).
+positionner_pt_bateauV(Id,X,Y,T):-Xbis is X+1,not(Xbis<11),write('Placement hors du terrain\n'),false.
+positionner_pt_bateauV(Id,X,Y,T):-Xbis is X+1,bateau_joueur1(_,Xbis,Y),write('Il y a deja un bateau a cet endroit\n'),false.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % mise en mémoire des coups tirés
 :- dynamic(coups_tires_joueur1/2).
 
 tirer_joueur1(X, _) :- X > 10, write('Tir invalide en X').
-tirer_joueur1(X, _) :- X < 1, write('Tir invalide en X').
 tirer_joueur1(_, Y) :- Y > 10, write('Tir invalide en Y').
-tirer_joueur1(_, Y) :- Y < 1, write('Tir invalide en Y').
 tirer_joueur1(X, Y) :- coups_tires_joueur1(X, Y), write('Coup déjà joué !').
-tirer_joueur1(X, Y) :- not(coups_tires_joueur1(X, Y)), assert(coups_tires_joueur1(X, Y)), 
-bateau_joueur2(Id, X, Y), write('Touché !'), 
-couler_joueur1(Id), write('\nCoulé !').
+tirer_joueur1(X, Y) :- X < 11, Y < 11, not(coups_tires_joueur1(X, Y)), assert(coups_tires_joueur1(X, Y)), 
+bateau_joueur2(Id, X, Y), write('Touché !'), couler_joueur1(Id), write('\nCoulé !').
 
 % on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
 couler_joueur1(Id) :- forall(bateau_joueur2(Id, X, Y), coups_tires_joueur1(X, Y)).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Ordi%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % bateaux joueur 2 (id, l, c) : ordi 
 
