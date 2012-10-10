@@ -1,6 +1,17 @@
 % matrice 10 * 10 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% découpage de la matrice en sous partie pour répartir équitablement les tirs aléatoires
+
+% sous_map(Id, XInf, XSup, YInf, YSup) 
+
+sous_map(0, 1, 5, 1, 5).
+sous_map(1, 1, 5, 6, 10).
+sous_map(2, 6, 10, 1, 5).
+sous_map(3, 6, 10, 6, 10).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%% Humain%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -162,27 +173,28 @@ evaluer_alignement([X, Y], XTouches, YTouches).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% trouve les extrémités verticales à partir des coordonnées en X des bateaux touchés
+extremites_verticales([X, Y], XTouches, XTrouves) :- max_list([X|XTouches], XMax), min_list([X|XTouches], XMin), XSup is XMax + 1, XInf is XMin - 1,
+findall(X2, coups_tires_joueur2(X2, Y), XTires),
+subtract([XSup,XInf], [0, 11 | XTires], XTrouves).
+
+% trouve les extrémités horizontales à partir des coordonnées en Y des bateaux touchés
+extremites_horizontales([X, Y], YTouches, YTrouves) :- max_list([Y|YTouches], YMax), min_list([Y|YTouches], YMin), YSup is YMax + 1, YInf is YMin - 1,
+findall(Y2, coups_tires_joueur2(X, Y2), YTires),
+subtract([YSup,YInf], [0, 11 | YTires], YTrouves).
+
 evaluer_alignement([X, Y], [], []) :- strategie_tir([[X, Y]]).
 
-% alignement vertical : on essaye de tirer au delà des extrémités verticales
-evaluer_alignement([X, Y], [T1|Q1], []) :- max_list([X|[T1|Q1]], XMax), min_list([X|[T1|Q1]], XMin), XSup is XMax + 1, XInf is XMin - 1,
-findall(X2, coups_tires_joueur2(X2, Y), XTires),
-subtract([XSup,XInf], [0, 11 | XTires], XTrouves),
+% alignement vertical : on essaye de tirer aux des extrémités verticales
+evaluer_alignement([X, Y], [T1|Q1], []) :- extremites_verticales([X, Y], [T1|Q1], XTrouves),
 evaluer_tir([X, Y], XTrouves, []).
 
-% alignement horizontal : on essaye de tirer au delà des extrémités horizontales
-evaluer_alignement([X, Y], [], [T2|Q2]) :- max_list([Y|[T2|Q2]], YMax), min_list([Y|[T2|Q2]], YMin), YSup is YMax + 1, YInf is YMin - 1,
-findall(Y2, coups_tires_joueur2(X, Y2), YTires),
-subtract([YSup,YInf], [0, 11 | YTires], YTrouves),
+% alignement horizontal : on essaye de tirer aux extrémités horizontales
+evaluer_alignement([X, Y], [], [T2|Q2]) :- extremites_horizontales([X, Y], [T2|Q2], YTrouves),
 evaluer_tir([X, Y], [], YTrouves).
 
 % cas particulier : double alignement
-evaluer_alignement([X, Y], [T1|Q1], [T2|Q2]) :- max_list([X|[T1|Q1]], XMax), min_list([X|[T1|Q1]], XMin), XSup is XMax + 1, XInf is XMin - 1,
-findall(X2, coups_tires_joueur2(X2, Y), XTires),
-subtract([XSup,XInf], [0, 11 | XTires], XTrouves),
-max_list([Y|[T2|Q2]], YMax), min_list([Y|[T2|Q2]], YMin), YSup is YMax + 1, YInf is YMin - 1,
-findall(Y2, coups_tires_joueur2(X, Y2), YTires),
-subtract([YSup,YInf], [0, 11 | YTires], YTrouves),
+evaluer_alignement([X, Y], [T1|Q1], [T2|Q2]) :- extremites_verticales([X, Y], [T1|Q1], XTrouves), extremites_horizontales([X, Y], [T2|Q2], YTrouves),
 evaluer_tir([X, Y], XTrouves, YTrouves).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,6 +222,13 @@ partie_terminee([_|_], []) :- write('Partie terminee\nLe joueur 2 a gagne\n').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% choix de l'endroit de la matrice où tirer dans le cas d'un tir aléatoire
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% fonction présente dans la version 6 de SWI-Prolog
+
 random_between(L, U, R) :-
 integer(L), integer(U), !,
 U >= L,
@@ -217,3 +236,5 @@ R is L+random((U+1)-L).
 random_between(L, U, _) :-
 must_be(integer, L),
 must_be(integer, U).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
