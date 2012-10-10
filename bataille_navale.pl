@@ -7,31 +7,31 @@
 % bateaux joueur 1 (id, ligne, colonne) : humain
 
 % bateau 1 : 2 cases
-bateau_joueur1(0, 1, 5).
-bateau_joueur1(0, 1, 6).
+bateau_joueur1(0, 4, 5).
+bateau_joueur1(0, 4, 6).
 
 % bateau 2 : 3 cases
+bateau_joueur1(1, 3, 4).
 bateau_joueur1(1, 3, 5).
-bateau_joueur1(1, 4, 5).
-bateau_joueur1(1, 5, 5).
+bateau_joueur1(1, 3, 6).
 
 % bateau 3 : 3 cases
+bateau_joueur1(2, 2, 7).
 bateau_joueur1(2, 3, 7).
 bateau_joueur1(2, 4, 7).
-bateau_joueur1(2, 5, 7).
 
 % bateau 4 : 4 cases
-bateau_joueur1(3, 2, 6).
-bateau_joueur1(3, 3, 6).
-bateau_joueur1(3, 4, 6).
+bateau_joueur1(3, 5, 4).
+bateau_joueur1(3, 5, 5).
 bateau_joueur1(3, 5, 6).
+bateau_joueur1(3, 5, 7).
 
 % bateau 5 : 5 cases
-bateau_joueur1(4, 6, 4).
-bateau_joueur1(4, 6, 5).
-bateau_joueur1(4, 6, 6).
-bateau_joueur1(4, 6, 7).
+bateau_joueur1(4, 3, 8).
+bateau_joueur1(4, 4, 8).
+bateau_joueur1(4, 5, 8).
 bateau_joueur1(4, 6, 8).
+bateau_joueur1(4, 7, 8).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %choix du placement des bateaux par l utilisateur
@@ -81,9 +81,9 @@ positionner_pt_bateauV(Id,X,Y,T):-Xbis is X+1,bateau_joueur1(_,Xbis,Y),write('Il
 
 tirer_joueur1(X, _) :- X > 10, write('Tir invalide en X').
 tirer_joueur1(_, Y) :- Y > 10, write('Tir invalide en Y').
-tirer_joueur1(X, Y) :- coups_tires_joueur1(X, Y), write('Coup déjà joué !').
+tirer_joueur1(X, Y) :- coups_tires_joueur1(X, Y), write('Coup deja joue !').
 tirer_joueur1(X, Y) :- X < 11, Y < 11, not(coups_tires_joueur1(X, Y)), assert(coups_tires_joueur1(X, Y)), 
-bateau_joueur2(Id, X, Y), write('Touché !'), couler_joueur1(Id), write('\nCoulé !').
+bateau_joueur2(Id, X, Y), write('Touche !'), couler_joueur1(Id), write('\nCoule !').
 
 % on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
 couler_joueur1(Id) :- forall(bateau_joueur2(Id, X, Y), coups_tires_joueur1(X, Y)).
@@ -138,8 +138,8 @@ tirer_joueur2(X, Y) :- coups_tires_joueur2(X, Y), tirer_joueur2.
 
 tirer_joueur2(X, Y) :- not(coups_tires_joueur2(X, Y)), assert(coups_tires_joueur2(X, Y)), 
 write('Joueur 2 : tir en '), write(X), write(' * '), write(Y), 
-bateau_joueur1(Id, X, Y), assert(bateaux_touches_joueur2(Id, X, Y)), write('\nTouché !'), 
-couler_joueur2(Id), write('\nCoulé !'), retractall(bateaux_touches_joueur2(Id, _, _)).
+bateau_joueur1(Id, X, Y), assert(bateaux_touches_joueur2(Id, X, Y)), write('\nTouche !'), 
+couler_joueur2(Id), write('\nCoule !'), retractall(bateaux_touches_joueur2(Id, _, _)).
 
 % on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
 couler_joueur2(Id) :- forall(bateau_joueur1(Id, X, Y), coups_tires_joueur2(X, Y)).
@@ -199,6 +199,17 @@ evaluer_tir([_, Y], [XChoisi|_], [_|_]) :- tirer_joueur2(XChoisi, Y).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% partie terminée
+
+partie_terminee :- findall([X, Y], coups_tires_joueur1(X, Y), TirsJ1), findall([X1, Y1], bateau_joueur2(_, X1, Y1), BateauxJ2), subtract(BateauxJ2, TirsJ1, ResteJ1),
+findall([X2, Y2], coups_tires_joueur2(X2, Y2), TirsJ2), findall([X3, Y3], bateau_joueur1(_, X3, Y3), BateauxJ1), subtract(BateauxJ1, TirsJ2, ResteJ2), 
+partie_terminee(ResteJ1, ResteJ2).
+
+partie_terminee([], [_|_]) :- write('Partie terminee\nLe joueur 1 a gagne\n').
+partie_terminee([_|_], []) :- write('Partie terminee\nLe joueur 2 a gagne\n').
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 random_between(L, U, R) :-
 integer(L), integer(U), !,
 U >= L,
@@ -206,4 +217,3 @@ R is L+random((U+1)-L).
 random_between(L, U, _) :-
 must_be(integer, L),
 must_be(integer, U).
-
