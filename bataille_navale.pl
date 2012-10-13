@@ -96,7 +96,7 @@ tirer_joueur1(X, _) :- X > 10, write('Tir invalide en X').
 tirer_joueur1(_, Y) :- Y > 10, write('Tir invalide en Y').
 tirer_joueur1(X, Y) :- coups_tires_joueur1(X, Y), write('Coup deja joue !').
 tirer_joueur1(X, Y) :- X < 11, Y < 11, not(coups_tires_joueur1(X, Y)), assert(coups_tires_joueur1(X, Y)), 
-bateau_joueur2(Id, X, Y), write('Touche !'), couler_joueur1(Id), write('\nCoule !').
+bateau_joueur2(Id, X, Y), write('Touche !'), couler_joueur1(Id), write('\nCoule !'), partie_terminee.
 
 % on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
 couler_joueur1(Id) :- forall(bateau_joueur2(Id, X, Y), coups_tires_joueur1(X, Y)).
@@ -167,7 +167,7 @@ tirer_joueur2(X, Y) :- coups_tires_joueur2(X, Y), tirer_joueur2.
 tirer_joueur2(X, Y) :- not(coups_tires_joueur2(X, Y)), assert(coups_tires_joueur2(X, Y)), 
 write('Joueur 2 : tir en '), write(X), write(' * '), write(Y), 
 bateau_joueur1(Id, X, Y), assert(bateaux_touches_joueur2(Id, X, Y)), write('\nTouche !'), 
-couler_joueur2(Id), write('\nCoule !'), retractall(bateaux_touches_joueur2(Id, _, _)).
+couler_joueur2(Id), write('\nCoule !'), retractall(bateaux_touches_joueur2(Id, _, _)), partie_terminee.
 
 % on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
 couler_joueur2(Id) :- forall(bateau_joueur1(Id, X, Y), coups_tires_joueur2(X, Y)).
