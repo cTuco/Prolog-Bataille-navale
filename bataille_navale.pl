@@ -75,7 +75,6 @@ positionner_pt_bateauH(Id,X,Y,T):-T<1.
 positionner_pt_bateauH(Id,X,Y,T):-Ybis is Y+1,T2 is T-1, Ybis<11,assert(bateau_joueur1(Id,X,Ybis)),positionner_pt_bateauH(Id,X,Ybis,T2).
 positionner_pt_bateauH(Id,X,Y,T):-write('Placement hors du terrain\n'),false.
 
-
 %%%%% Positonnement vertical d un bateau
 positionner_bateauV(T,Id):-write('Sur quelle colonne voulez vous placer le bateau ?\n'),read(C),write('Sur quelle ligne?\n'),read(L),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
 positionner_bateauV(T,Id):-retract(bateau_joueur1(Id,X,Y)),positionner_bateauV(T,Id).
@@ -132,15 +131,30 @@ bateau_joueur2(4, 10, 8).
 bateau_joueur2(4, 10, 9).
 bateau_joueur2(4, 10, 10).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % mise en mémoire des coups tirés et des bateaux touchés 
 :- dynamic(coups_tires_joueur2/2).
 :- dynamic(bateaux_touches_joueur2/3).
+
+% retourne le nombre de coups tirés pour chaque sous map dans la deuxième liste
+nb_coups_map([], []).
+
+nb_coups_map([[Id, XInf, XSup, YInf, YSup]|Q1], [NbCoups|Q2]) :- nb_coups_map(Q1, Q2),
+findall([X, Y], (coups_tires_joueur2(X, Y), X >= XInf, X =< XSup, Y >= YInf, Y =< YSup), CoupsTires),
+length(CoupsTires, NbCoups). 
+
+% retourne l'id de la sous map avec le nombre de coups tirés minimum
+choisir_sous_map(IdMin) :- findall([Id, XInf, XSup, YInf, YSup], sous_map(Id, XInf, XSup, YInf, YSup), SousMap), nb_coups_map(SousMap, Coups),
+min_list(Coups, Min), nth0(IdMin, Coups, Min), !. 
+
+% retourne la sous Map avec le nombre minimum de coups 
+obtenir_sous_map(SousMap) :- choisir_sous_map(Id), findall([Id, XInf, XSup, YInf, YSup], sous_map(Id, XInf, XSup, YInf, YSup), SousMap).
 
 % on stocke tous les prédicats "bateaux_touches_joueur2" dans une liste
 tirer_joueur2 :- findall([X, Y], bateaux_touches_joueur2(_, X, Y), R), tirer_joueur2(R).
 
 % si la liste est vide on tire au hasard 
-tirer_joueur2([]) :- random(1, 11, X), random(1, 11, Y), tirer_joueur2(X, Y).
+tirer_joueur2([]) :- obtenir_sous_map([[_, XInf, XSup, YInf, YSup]]), random_between(XInf, XSup, X), random(YInf, YSup, Y), tirer_joueur2(X, Y).
 
 % autrement on applique une stratégie
 tirer_joueur2([T|Q]) :- strategie_tir([T|Q]).
@@ -182,7 +196,7 @@ subtract([XSup,XInf], [0, 11 | XTires], XTrouves).
 extremites_horizontales([X, Y], YTouches, YTrouves) :- max_list([Y|YTouches], YMax), min_list([Y|YTouches], YMin), YSup is YMax + 1, YInf is YMin - 1,
 findall(Y2, coups_tires_joueur2(X, Y2), YTires),
 subtract([YSup,YInf], [0, 11 | YTires], YTrouves).
-
+ 
 evaluer_alignement([X, Y], [], []) :- strategie_tir([[X, Y]]).
 
 % alignement vertical : on essaye de tirer aux des extrémités verticales
@@ -219,11 +233,6 @@ partie_terminee(ResteJ1, ResteJ2).
 
 partie_terminee([], [_|_]) :- write('Partie terminee\nLe joueur 1 a gagne\n').
 partie_terminee([_|_], []) :- write('Partie terminee\nLe joueur 2 a gagne\n').
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% choix de l'endroit de la matrice où tirer dans le cas d'un tir aléatoire
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
