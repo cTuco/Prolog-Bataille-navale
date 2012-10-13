@@ -10,7 +10,7 @@ Projet Prolog 4IF : bataille navale
 
 * Affichage des bateaux et des coups tirés : `afficher.`
 
-* Tirer avec le joueur 1 : `tirer_joueur1(X, Y).`
+* Tirer avec le joueur 1 : `tirer_J1(X, Y).`
 
-* Tirer avec le joueur 2 : `tirer_joueur2.`
+* Tirer avec le joueur 2 : `tirer_J2.`
 
