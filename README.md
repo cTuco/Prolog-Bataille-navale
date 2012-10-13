@@ -20,4 +20,3 @@ Projet Prolog 4IF : bataille navale
 
 * Tirer avec le joueur 2 : `tirer_joueur2.`
 
-* Partie terminée ? : `partie_terminee.`
