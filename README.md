@@ -13,4 +13,3 @@ Projet Prolog 4IF : bataille navale
 * Tirer avec le joueur 1 : `tirer_J1(X, Y).`
 
 * Tirer avec le joueur 2 : `tirer_J2.`
-

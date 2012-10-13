@@ -1,16 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% matrice 10 * 10 %%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% découpage de la matrice en sous partie pour répartir équitablement les tirs aléatoires
-
-% sous_map(Id, XInf, XSup, YInf, YSup) 
-
-sous_map(0, 1, 5, 1, 5).
-sous_map(1, 1, 5, 6, 10).
-sous_map(2, 6, 10, 1, 5).
-sous_map(3, 6, 10, 6, 10).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% positionnement %%%%%%%%%%%%%%%%
@@ -179,7 +167,7 @@ tirer_J1(X, _) :- X > 10, write('Tir invalide en X').
 tirer_J1(_, Y) :- Y > 10, write('Tir invalide en Y').
 tirer_J1(X, Y) :- coups_tires_joueur1(X, Y), write('Coup deja joue !').
 tirer_J1(X, Y) :- X < 11, Y < 11, not(coups_tires_joueur1(X, Y)), assert(coups_tires_joueur1(X, Y)), 
-bateau_joueur2(Id, X, Y), write('Touche !'), couler_joueur1(Id), write('\nCoule !'), partie_terminee.
+bateau_joueur2(Id, X, Y), write('Touche !'), couler_joueur1(Id), write('\nCoule !\n'), partie_terminee.
 
 % on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
 couler_joueur1(Id) :- forall(bateau_joueur2(Id, X, Y), coups_tires_joueur1(X, Y)).
@@ -193,25 +181,14 @@ couler_joueur1(Id) :- forall(bateau_joueur2(Id, X, Y), coups_tires_joueur1(X, Y)
 :- dynamic(coups_tires_joueur2/2).
 :- dynamic(bateaux_touches_joueur2/3).
 
-% retourne le nombre de coups tirés pour chaque sous map dans la deuxième liste
-nb_coups_map([], []).
-
-nb_coups_map([[_, XInf, XSup, YInf, YSup]|Q1], [NbCoups|Q2]) :- nb_coups_map(Q1, Q2),
-findall([X, Y], (coups_tires_joueur2(X, Y), X >= XInf, X =< XSup, Y >= YInf, Y =< YSup), CoupsTires),
-length(CoupsTires, NbCoups). 
-
-% retourne l'id de la sous map avec le nombre de coups tirés minimum
-choisir_sous_map(IdMin) :- findall([Id, XInf, XSup, YInf, YSup], sous_map(Id, XInf, XSup, YInf, YSup), SousMap), nb_coups_map(SousMap, Coups),
-min_list(Coups, Min), nth0(IdMin, Coups, Min), !. 
-
-% retourne la sous Map avec le nombre minimum de coups 
-obtenir_sous_map(SousMap) :- choisir_sous_map(Id), findall([Id, XInf, XSup, YInf, YSup], sous_map(Id, XInf, XSup, YInf, YSup), SousMap).
-
 % on stocke tous les prédicats "bateaux_touches_joueur2" dans une liste
 tirer_J2 :- findall([X, Y], bateaux_touches_joueur2(_, X, Y), R), tirer_J2(R).
 
-% si la liste est vide on tire au hasard 
-tirer_J2([]) :- obtenir_sous_map([[_, XInf, XSup, YInf, YSup]]), random_between(XInf, XSup, X), random(YInf, YSup, Y), tirer_J2(X, Y).
+% si la liste est vide on tire au hasard dans une case qui possède au moins une case adjacente où on n'a pas tiré 
+tirer_J2([]) :- random_between(1, 10, X), random_between(1, 10, Y), 
+adjacent(X, Y, LAdj), findall([XTires, YTires], coups_tires_joueur2(XTires, YTires), LCoupsTires),
+subtract(LAdj, LCoupsTires, LPossibles),
+evaluer_tir_alea([X, Y], LPossibles).
 
 % autrement on applique une stratégie
 tirer_J2([T|Q]) :- strategie_tir([T|Q]).
@@ -221,10 +198,15 @@ tirer_J2(X, Y) :- coups_tires_joueur2(X, Y), tirer_J2.
 tirer_J2(X, Y) :- not(coups_tires_joueur2(X, Y)), assert(coups_tires_joueur2(X, Y)), 
 write('Joueur 2 : tir en '), write(X), write(' * '), write(Y), 
 bateau_joueur1(Id, X, Y), assert(bateaux_touches_joueur2(Id, X, Y)), write('\nTouche !'), 
-couler_joueur2(Id), write('\nCoule !'), retractall(bateaux_touches_joueur2(Id, _, _)), partie_terminee.
+couler_joueur2(Id), write('\nCoule !\n'), retractall(bateaux_touches_joueur2(Id, _, _)), partie_terminee.
 
 % on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
 couler_joueur2(Id) :- forall(bateau_joueur1(Id, X, Y), coups_tires_joueur2(X, Y)).
+
+% inutile de tirer dans une case esseulée
+evaluer_tir_alea([_, _], []) :- tirer_J2([]).
+
+evaluer_tir_alea([X, Y], [_|_]) :- tirer_J2(X, Y).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
