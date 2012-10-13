@@ -45,12 +45,16 @@ sous_map(3, 6, 10, 6, 10).
 %bateau_joueur1(4, 7, 8).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% placement du joueur et de l'ordinateur
+positionner :- positionner_tousJ1, !, write('\n'), positionner_tousJ2, !.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % choix du placement des bateaux par l utilisateur
 
 % bateaux joueur 1 (id, ligne, colonne) : humain
 :- dynamic(bateau_joueur1/3).
 
-positionner_tous:-positionner_t2,positionner_t3,positionner_t3Bis,positionner_t4,positionner_t5.
+positionner_tousJ1:-positionner_t2,positionner_t3,positionner_t3Bis,positionner_t4,positionner_t5.
 
 positionner_t2:-write('Bateau de taille 2\n'),write('Dans quelle direction voulez vous placer le bateau Verticale/Horizontale(1/0)?\n'),read(Rep),Rep==0,positionner_bateauH(2,1).
 positionner_t2:-positionner_bateauV(2,1).
@@ -134,7 +138,52 @@ couler_joueur1(Id) :- forall(bateau_joueur2(Id, X, Y), coups_tires_joueur1(X, Y)
 %bateau_joueur2(4, 10, 9).
 %bateau_joueur2(4, 10, 10).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% placement des bateaux de l'ordinateur
+
+:- dynamic(bateau_joueur2/3).
+
+positionner_tousJ2:-write('Placement des bateaux de l ordi'),positionner_t2J2,positionner_t3J2,positionner_t3BisJ2,positionner_t4J2,positionner_t5J2.
+
+positionner_t2J2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(2,1).
+positionner_t2J2:-positionner_bateauVJ2(2,1).
+
+positionner_t3J2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(3,2).
+positionner_t3J2:-positionner_bateauVJ2(3,2).
+
+positionner_t3BisJ2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(3,3).
+positionner_t3BisJ2:-positionner_bateauVJ2(3,3).
+
+positionner_t4J2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(4,4).
+positionner_t4J2:-positionner_bateauVJ2(4,4).
+
+positionner_tJ2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(5,5).
+positionner_t5J2:-positionner_bateauVJ2(5,5).
+
+%%%%% Positonnement horizontal d un bateau
+positionner_bateauHJ2(T,Id):-random_between(1,10,L),random_between(1,10,C),Cbis is C + -1,positionner_pt_bateauHJ2(Id,L,Cbis,T).
+positionner_bateauHJ2(T,Id):-bateau_joueur2(Id,_,_),retract(bateau_joueur2(Id,_,_)),positionner_bateauHJ2(T,Id).
+positionner_bateauHJ2(T,Id):-positionner_bateauHJ2(T,Id).
+
+
+positionner_pt_bateauHJ2(_,_,_,T):-T<1.
+positionner_pt_bateauHJ2(Id,X,Y,T):-Ybis is Y+1,T2 is T-1, Ybis<11,not(bateau_joueur2(_,X,Ybis)),assert(bateau_joueur2(Id,X,Ybis)),positionner_pt_bateauHJ2(Id,X,Ybis,T2).
+positionner_pt_bateauHJ2(_,_,Y,_):-Ybis is Y+1,not(Ybis<11),false.
+positionner_pt_bateauHJ2(_,X,Y,_):-Ybis is Y+1,bateau_joueur2(_,X,Ybis),false.
+
+
+%%%%% Positonnement vertical d un bateau
+positionner_bateauVJ2(T,Id):-random_between(1,10,C),random_between(1,10,L),Lbis is L + -1,positionner_pt_bateauVJ2(Id,Lbis,C,T).
+positionner_bateauVJ2(T,Id):-bateau_joueur2(Id,_,_),retract(bateau_joueur2(Id,_,_)),positionner_bateauVJ2(T,Id).
+positionner_bateauVJ2(T,Id):-positionner_bateauVJ2(T,Id).
+
+positionner_pt_bateauVJ2(_,_,_,T):-T<1.
+positionner_pt_bateauVJ2(Id,X,Y,T):-Xbis is X+1,T2 is T-1, Xbis<11,not(bateau_joueur2(_,Xbis,Y)),assert(bateau_joueur2(Id,Xbis,Y)),positionner_pt_bateauVJ2(Id,Xbis,Y,T2).
+positionner_pt_bateauVJ2(_,X,_,_):-Xbis is X+1,not(Xbis<11),false.
+positionner_pt_bateauVJ2(_,X,Y,_):-Xbis is X+1,bateau_joueur2(_,Xbis,Y),false.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % mise en mémoire des coups tirés et des bateaux touchés 
 :- dynamic(coups_tires_joueur2/2).
 :- dynamic(bateaux_touches_joueur2/3).
@@ -237,63 +286,6 @@ partie_terminee(ResteJ1, ResteJ2).
 partie_terminee([], [_|_]) :- write('Partie terminee\nLe joueur 1 a gagne\n').
 partie_terminee([_|_], []) :- write('Partie terminee\nLe joueur 2 a gagne\n').
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% fonction présente dans la version 6 de SWI-Prolog
-
-random_between(L, U, R) :-
-integer(L), integer(U), !,
-U >= L,
-R is L+random((U+1)-L).
-random_between(L, U, _) :-
-must_be(integer, L),
-must_be(integer, U).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-:- dynamic(bateau_joueur2/3).
-
-positionner_tousJ2:-write('Placement des bateaux de l ordi'),positionner_t2J2,positionner_t3J2,positionner_t3BisJ2,positionner_t4J2,positionner_t5J2.
-
-positionner_t2J2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(2,1).
-positionner_t2J2:-positionner_bateauVJ2(2,1).
-
-positionner_t3J2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(3,2).
-positionner_t3J2:-positionner_bateauVJ2(3,2).
-
-positionner_t3BisJ2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(3,3).
-positionner_t3BisJ2:-positionner_bateauVJ2(3,3).
-
-positionner_t4J2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(4,4).
-positionner_t4J2:-positionner_bateauVJ2(4,4).
-
-positionner_tJ2:-random_between(0,1,Rep),Rep==0,positionner_bateauHJ2(5,5).
-positionner_t5J2:-positionner_bateauVJ2(5,5).
-
-%%%%% Positonnement horizontal d un bateau
-positionner_bateauHJ2(T,Id):-random_between(1,10,L),random_between(1,10,C),Cbis is C + -1,positionner_pt_bateauHJ2(Id,L,Cbis,T).
-positionner_bateauHJ2(T,Id):-bateau_joueur2(Id,_,_),retract(bateau_joueur2(Id,_,_)),positionner_bateauHJ2(T,Id).
-positionner_bateauHJ2(T,Id):-positionner_bateauHJ2(T,Id).
-
-
-positionner_pt_bateauHJ2(_,_,_,T):-T<1.
-positionner_pt_bateauHJ2(Id,X,Y,T):-Ybis is Y+1,T2 is T-1, Ybis<11,not(bateau_joueur2(_,X,Ybis)),assert(bateau_joueur2(Id,X,Ybis)),positionner_pt_bateauHJ2(Id,X,Ybis,T2).
-positionner_pt_bateauHJ2(_,_,Y,_):-Ybis is Y+1,not(Ybis<11),false.
-positionner_pt_bateauHJ2(_,X,Y,_):-Ybis is Y+1,bateau_joueur2(_,X,Ybis),false.
-
-
-
-%%%%% Positonnement vertical d un bateau
-positionner_bateauVJ2(T,Id):-random_between(1,10,C),random_between(1,10,L),Lbis is L + -1,positionner_pt_bateauVJ2(Id,Lbis,C,T).
-positionner_bateauVJ2(T,Id):-bateau_joueur2(Id,_,_),retract(bateau_joueur2(Id,_,_)),positionner_bateauVJ2(T,Id).
-positionner_bateauVJ2(T,Id):-positionner_bateauVJ2(T,Id).
-
-positionner_pt_bateauVJ2(_,_,_,T):-T<1.
-positionner_pt_bateauVJ2(Id,X,Y,T):-Xbis is X+1,T2 is T-1, Xbis<11,not(bateau_joueur2(_,Xbis,Y)),assert(bateau_joueur2(Id,Xbis,Y)),positionner_pt_bateauVJ2(Id,Xbis,Y,T2).
-positionner_pt_bateauVJ2(_,X,_,_):-Xbis is X+1,not(Xbis<11),false.
-positionner_pt_bateauVJ2(_,X,Y,_):-Xbis is X+1,bateau_joueur2(_,Xbis,Y),false.
-
-
 %%%%%%%%%%%Affichage%%%%%%%%%%%%%%%%
 
 %%%%%%%% Utilitaires affichage
@@ -304,9 +296,14 @@ substituer(_,_ ,[] ,[]).
 substituer(X,Y,[X|L1],[Y|L2]):- substituer(X,Y,L1,L2).
 substituer(X,Y,[T|L1],[T|L2]):- substituer(X,Y,L1,L2), X \= T.
 
-
 substituer_non_Bat(A,List):-A>10,write(List),nl.
 substituer_non_Bat(A,List):-substituer(A,'~',List,L2),X1 is A+1,substituer_non_Bat(X1,L2).
+
+%%%%%%%% Affichage de tout
+
+afficher :- write('Bateaux J1 : \n'), afficher_bateauJ1, !, 
+write('\n\Coups tires J1 : \n'), afficher_tire, !, 
+write('\n\nBateaux J2 : \n'), afficher_bateauJ2, !.
 
 %%%%%%%% Affichage map joueur1
 construire_map_J1(Res,Bat,T,_):-T==1,Bat==[],substituer_non_Bat(1,Res).
@@ -318,7 +315,6 @@ construire_map_J1(_,Bat,T,_):-T==0,Bat==[],write(['~','~','~','~','~','~','~','~
 %afficher(L):-L<10,construire_map_J1(_,[],0,L),L2 is L+1,afficher(L2).
 afficher_bateauJ1:-construire_map_J1(_,[],0,1),construire_map_J1(_,[],0,2),construire_map_J1(_,[],0,3),construire_map_J1(_,[],0,4),construire_map_J1(_,[],0,5),construire_map_J1(_,[],0,6),construire_map_J1(_,[],0,7),construire_map_J1(_,[],0,8),construire_map_J1(_,[],0,9),construire_map_J1(_,[],0,10).
 
-
 %%%%%%%% Affichage map joueur2
 afficher_bateauJ2:-construire_map_J2(_,[],0,1),construire_map_J2(_,[],0,2),construire_map_J2(_,[],0,3),construire_map_J2(_,[],0,4),construire_map_J2(_,[],0,5),construire_map_J2(_,[],0,6),construire_map_J2(_,[],0,7),construire_map_J2(_,[],0,8),construire_map_J2(_,[],0,9),construire_map_J2(_,[],0,10).
 
@@ -326,8 +322,6 @@ construire_map_J2(Res,Bat,T,_):-T==1,Bat==[],substituer_non_Bat(1,Res).
 construire_map_J2(Res,_,T,L):-T==0,findall(Y,bateau_joueur2(_,L,Y),Bat2),Bat2\==[],premelement(Bat2,Batprem),reste(Bat2,Reste),substituer(Batprem,'X',[1,2,3,4,5,6,7,8,9,10],Res),construire_map_J2(Res,Reste,1,L).
 construire_map_J2(Res,Bat,_,L):-Bat\==[],premelement(Bat,Batprem),reste(Bat,Reste),substituer(Batprem,'X',Res,Res2),construire_map_J2(Res2,Reste,1,L).
 construire_map_J2(_,Bat,T,_):-T==0,Bat==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
-
-
 
 %%%%%%%% Affichage map tir et touché J1
 
@@ -343,3 +337,15 @@ construire_tire(Res,Pt,T,L):-T==1,premelement(Pt,Pt_prem),reste(Pt,Reste),bateau
 construire_tire(_,Pt,T,_):-T==0,Pt==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
 
 afficher_tire:-write([1,2,3,4,5,6,7,8,9,10]),nl,construire_tire(_,[],0,1),construire_tire(_,[],0,2),construire_tire(_,[],0,3),construire_tire(_,[],0,4),construire_tire(_,[],0,5),construire_tire(_,[],0,6),construire_tire(_,[],0,7),construire_tire(_,[],0,8),construire_tire(_,[],0,9),construire_tire(_,[],0,10).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% fonction présente dans la version 6 de SWI-Prolog
+
+random_between(L, U, R) :-
+integer(L), integer(U), !,
+U >= L,
+R is L+random((U+1)-L).
+random_between(L, U, _) :-
+must_be(integer, L),
+must_be(integer, U).
