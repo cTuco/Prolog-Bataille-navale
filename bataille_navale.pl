@@ -69,24 +69,24 @@ positionner_t5:-positionner_bateauV(5,5).
 
 %%%%% Positonnement horizontal d un bateau
 positionner_bateauH(T,Id):-write('Sur quelle ligne voulez vous placer le bateau ?\n'),read(L),write('Sur quelle colonne?\n'),read(C),Cbis is C + -1,positionner_pt_bateauH(Id,L,Cbis,T).
-positionner_bateauH(T,Id):-bateau_joueur1(Id,X1,Y1),retract(bateau_joueur1(Id,X,Y)),positionner_bateauH(T,Id).
+positionner_bateauH(T,Id):-bateau_joueur1(Id,_,_),retract(bateau_joueur1(Id,_,_)),positionner_bateauH(T,Id).
 positionner_bateauH(T,Id):-positionner_bateauH(T,Id).
 
-positionner_pt_bateauH(Id,X,Y,T):-T<1.
+positionner_pt_bateauH(_,_,_,T):-T<1.
 positionner_pt_bateauH(Id,X,Y,T):-Ybis is Y+1,T2 is T-1, Ybis<11,not(bateau_joueur1(_,X,Ybis)),assert(bateau_joueur1(Id,X,Ybis)),positionner_pt_bateauH(Id,X,Ybis,T2).
-positionner_pt_bateauH(Id,X,Y,T):-Ybis is Y+1,not(Ybis<11),write('Placement hors du terrain\n'),false.
-positionner_pt_bateauH(Id,X,Y,T):-Ybis is Y+1,bateau_joueur1(_,X,Ybis),write('Il y a deja un bateau a cet endroit\n'),false.
+positionner_pt_bateauH(_,_,Y,_):-Ybis is Y+1,not(Ybis<11),write('Placement hors du terrain\n'),false.
+positionner_pt_bateauH(_,X,Y,_):-Ybis is Y+1,bateau_joueur1(_,X,Ybis),write('Il y a deja un bateau a cet endroit\n'),false.
 
 
 %%%%% Positonnement vertical d un bateau
 positionner_bateauV(T,Id):-write('Sur quelle colonne voulez vous placer le bateau ?\n'),read(C),write('Sur quelle ligne?\n'),read(L),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
-positionner_bateauV(T,Id):-bateau_joueur1(Id,X1,Y1),retract(bateau_joueur1(Id,X,Y)),positionner_bateauV(T,Id).
+positionner_bateauV(T,Id):-bateau_joueur1(Id,_,_),retract(bateau_joueur1(Id,_,_)),positionner_bateauV(T,Id).
 positionner_bateauV(T,Id):-positionner_bateauV(T,Id).
 
-positionner_pt_bateauV(Id,X,Y,T):-T<1.
+positionner_pt_bateauV(_,_,_,T):-T<1.
 positionner_pt_bateauV(Id,X,Y,T):-Xbis is X+1,T2 is T-1, Xbis<11,not(bateau_joueur1(_,Xbis,Y)),assert(bateau_joueur1(Id,Xbis,Y)),positionner_pt_bateauV(Id,Xbis,Y,T2).
-positionner_pt_bateauV(Id,X,Y,T):-Xbis is X+1,not(Xbis<11),write('Placement hors du terrain\n'),false.
-positionner_pt_bateauV(Id,X,Y,T):-Xbis is X+1,bateau_joueur1(_,Xbis,Y),write('Il y a deja un bateau a cet endroit\n'),false.
+positionner_pt_bateauV(_,X,_,_):-Xbis is X+1,not(Xbis<11),write('Placement hors du terrain\n'),false.
+positionner_pt_bateauV(_,X,Y,_):-Xbis is X+1,bateau_joueur1(_,Xbis,Y),write('Il y a deja un bateau a cet endroit\n'),false.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % mise en mémoire des coups tirés
@@ -142,7 +142,7 @@ couler_joueur1(Id) :- forall(bateau_joueur2(Id, X, Y), coups_tires_joueur1(X, Y)
 % retourne le nombre de coups tirés pour chaque sous map dans la deuxième liste
 nb_coups_map([], []).
 
-nb_coups_map([[Id, XInf, XSup, YInf, YSup]|Q1], [NbCoups|Q2]) :- nb_coups_map(Q1, Q2),
+nb_coups_map([[_, XInf, XSup, YInf, YSup]|Q1], [NbCoups|Q2]) :- nb_coups_map(Q1, Q2),
 findall([X, Y], (coups_tires_joueur2(X, Y), X >= XInf, X =< XSup, Y >= YInf, Y =< YSup), CoupsTires),
 length(CoupsTires, NbCoups). 
 
@@ -272,26 +272,26 @@ positionner_t5J2:-positionner_bateauVJ2(5,5).
 
 %%%%% Positonnement horizontal d un bateau
 positionner_bateauHJ2(T,Id):-random_between(1,10,L),random_between(1,10,C),Cbis is C + -1,positionner_pt_bateauHJ2(Id,L,Cbis,T).
-positionner_bateauHJ2(T,Id):-bateau_joueur2(Id,X1,Y1),retract(bateau_joueur2(Id,X,Y)),positionner_bateauHJ2(T,Id).
+positionner_bateauHJ2(T,Id):-bateau_joueur2(Id,_,_),retract(bateau_joueur2(Id,_,_)),positionner_bateauHJ2(T,Id).
 positionner_bateauHJ2(T,Id):-positionner_bateauHJ2(T,Id).
 
 
-positionner_pt_bateauHJ2(Id,X,Y,T):-T<1.
+positionner_pt_bateauHJ2(_,_,_,T):-T<1.
 positionner_pt_bateauHJ2(Id,X,Y,T):-Ybis is Y+1,T2 is T-1, Ybis<11,not(bateau_joueur2(_,X,Ybis)),assert(bateau_joueur2(Id,X,Ybis)),positionner_pt_bateauHJ2(Id,X,Ybis,T2).
-positionner_pt_bateauHJ2(Id,X,Y,T):-Ybis is Y+1,not(Ybis<11),false.
-positionner_pt_bateauHJ2(Id,X,Y,T):-Ybis is Y+1,bateau_joueur2(_,X,Ybis),false.
+positionner_pt_bateauHJ2(_,_,Y,_):-Ybis is Y+1,not(Ybis<11),false.
+positionner_pt_bateauHJ2(_,X,Y,_):-Ybis is Y+1,bateau_joueur2(_,X,Ybis),false.
 
 
 
 %%%%% Positonnement vertical d un bateau
 positionner_bateauVJ2(T,Id):-random_between(1,10,C),random_between(1,10,L),Lbis is L + -1,positionner_pt_bateauVJ2(Id,Lbis,C,T).
-positionner_bateauVJ2(T,Id):-bateau_joueur2(Id,X1,Y1),retract(bateau_joueur2(Id,X,Y)),positionner_bateauVJ2(T,Id).
+positionner_bateauVJ2(T,Id):-bateau_joueur2(Id,_,_),retract(bateau_joueur2(Id,_,_)),positionner_bateauVJ2(T,Id).
 positionner_bateauVJ2(T,Id):-positionner_bateauVJ2(T,Id).
 
-positionner_pt_bateauVJ2(Id,X,Y,T):-T<1.
+positionner_pt_bateauVJ2(_,_,_,T):-T<1.
 positionner_pt_bateauVJ2(Id,X,Y,T):-Xbis is X+1,T2 is T-1, Xbis<11,not(bateau_joueur2(_,Xbis,Y)),assert(bateau_joueur2(Id,Xbis,Y)),positionner_pt_bateauVJ2(Id,Xbis,Y,T2).
-positionner_pt_bateauVJ2(Id,X,Y,T):-Xbis is X+1,not(Xbis<11),false.
-positionner_pt_bateauVJ2(Id,X,Y,T):-Xbis is X+1,bateau_joueur2(_,Xbis,Y),false.
+positionner_pt_bateauVJ2(_,X,_,_):-Xbis is X+1,not(Xbis<11),false.
+positionner_pt_bateauVJ2(_,X,Y,_):-Xbis is X+1,bateau_joueur2(_,Xbis,Y),false.
 
 
 %%%%%%%%%%%Affichage%%%%%%%%%%%%%%%%
@@ -309,10 +309,10 @@ substituer_non_Bat(A,List):-A>10,write(List),nl.
 substituer_non_Bat(A,List):-substituer(A,'~',List,L2),X1 is A+1,substituer_non_Bat(X1,L2).
 
 %%%%%%%% Affichage map joueur1
-construire_map_J1(Res,Bat,T,L):-T==1,Bat==[],substituer_non_Bat(1,Res).
-construire_map_J1(Res,Bat,T,L):-T==0,findall(Y,bateau_joueur1(_,L,Y),Bat2),Bat2\==[],premelement(Bat2,Batprem),reste(Bat2,Reste),substituer(Batprem,'X',[1,2,3,4,5,6,7,8,9,10],Res),construire_map_J1(Res,Reste,1,L).
-construire_map_J1(Res,Bat,T,L):-Bat\==[],premelement(Bat,Batprem),reste(Bat,Reste),substituer(Batprem,'X',Res,Res2),construire_map_J1(Res2,Reste,1,L).
-construire_map_J1(Res,Bat,T,L):-T==0,Bat==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
+construire_map_J1(Res,Bat,T,_):-T==1,Bat==[],substituer_non_Bat(1,Res).
+construire_map_J1(Res,_,T,L):-T==0,findall(Y,bateau_joueur1(_,L,Y),Bat2),Bat2\==[],premelement(Bat2,Batprem),reste(Bat2,Reste),substituer(Batprem,'X',[1,2,3,4,5,6,7,8,9,10],Res),construire_map_J1(Res,Reste,1,L).
+construire_map_J1(Res,Bat,_,L):-Bat\==[],premelement(Bat,Batprem),reste(Bat,Reste),substituer(Batprem,'X',Res,Res2),construire_map_J1(Res2,Reste,1,L).
+construire_map_J1(_,Bat,T,_):-T==0,Bat==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
 
 
 %afficher(L):-L<10,construire_map_J1(_,[],0,L),L2 is L+1,afficher(L2).
@@ -322,24 +322,24 @@ afficher_bateauJ1:-construire_map_J1(_,[],0,1),construire_map_J1(_,[],0,2),const
 %%%%%%%% Affichage map joueur2
 afficher_bateauJ2:-construire_map_J2(_,[],0,1),construire_map_J2(_,[],0,2),construire_map_J2(_,[],0,3),construire_map_J2(_,[],0,4),construire_map_J2(_,[],0,5),construire_map_J2(_,[],0,6),construire_map_J2(_,[],0,7),construire_map_J2(_,[],0,8),construire_map_J2(_,[],0,9),construire_map_J2(_,[],0,10).
 
-construire_map_J2(Res,Bat,T,L):-T==1,Bat==[],substituer_non_Bat(1,Res).
-construire_map_J2(Res,Bat,T,L):-T==0,findall(Y,bateau_joueur2(_,L,Y),Bat2),Bat2\==[],premelement(Bat2,Batprem),reste(Bat2,Reste),substituer(Batprem,'X',[1,2,3,4,5,6,7,8,9,10],Res),construire_map_J2(Res,Reste,1,L).
-construire_map_J2(Res,Bat,T,L):-Bat\==[],premelement(Bat,Batprem),reste(Bat,Reste),substituer(Batprem,'X',Res,Res2),construire_map_J2(Res2,Reste,1,L).
-construire_map_J2(Res,Bat,T,L):-T==0,Bat==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
+construire_map_J2(Res,Bat,T,_):-T==1,Bat==[],substituer_non_Bat(1,Res).
+construire_map_J2(Res,_,T,L):-T==0,findall(Y,bateau_joueur2(_,L,Y),Bat2),Bat2\==[],premelement(Bat2,Batprem),reste(Bat2,Reste),substituer(Batprem,'X',[1,2,3,4,5,6,7,8,9,10],Res),construire_map_J2(Res,Reste,1,L).
+construire_map_J2(Res,Bat,_,L):-Bat\==[],premelement(Bat,Batprem),reste(Bat,Reste),substituer(Batprem,'X',Res,Res2),construire_map_J2(Res2,Reste,1,L).
+construire_map_J2(_,Bat,T,_):-T==0,Bat==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
 
 
 
 %%%%%%%% Affichage map tir et touché J1
 
 
-construire_tire(Res,Pt,T,L):-T==1,Pt==[],substituer_non_Bat(1,Res).
+construire_tire(Res,Pt,T,_):-T==1,Pt==[],substituer_non_Bat(1,Res).
 
-construire_tire(Res,Pt,T,L):-T==0,findall(Y,coups_tires_joueur1(L,Y),Pt_tire),premelement(Pt_tire,Pt_prem),reste(Pt_tire,Reste),not(bateau_joueur2(_,L,Pt_prem)),substituer(Pt_prem,'O',[1,2,3,4,5,6,7,8,9,10],Res_sub),construire_tire(Res_sub,Pt_tire,1,L).
+construire_tire(_,_,T,L):-T==0,findall(Y,coups_tires_joueur1(L,Y),Pt_tire),premelement(Pt_tire,Pt_prem),reste(Pt_tire,_),not(bateau_joueur2(_,L,Pt_prem)),substituer(Pt_prem,'O',[1,2,3,4,5,6,7,8,9,10],Res_sub),construire_tire(Res_sub,Pt_tire,1,L).
 
-construire_tire(Res,Pt,T,L):-T==0,findall(Y,coups_tires_joueur1(L,Y),Pt_tire),premelement(Pt_tire,Pt_prem),reste(Pt_tire,Reste),bateau_joueur2(_,L,Pt_prem),substituer(Pt_prem,'T',[1,2,3,4,5,6,7,8,9,10],Res_sub),construire_tire(Res_sub,Reste,1,L).
+construire_tire(_,_,T,L):-T==0,findall(Y,coups_tires_joueur1(L,Y),Pt_tire),premelement(Pt_tire,Pt_prem),reste(Pt_tire,Reste),bateau_joueur2(_,L,Pt_prem),substituer(Pt_prem,'T',[1,2,3,4,5,6,7,8,9,10],Res_sub),construire_tire(Res_sub,Reste,1,L).
 
 construire_tire(Res,Pt,T,L):-T==1,premelement(Pt,Pt_prem),reste(Pt,Reste),not(bateau_joueur2(_,L,Pt_prem)),substituer(Pt_prem,'O',Res,Res_sub),construire_tire(Res_sub,Reste,1,L).
 construire_tire(Res,Pt,T,L):-T==1,premelement(Pt,Pt_prem),reste(Pt,Reste),bateau_joueur2(_,L,Pt_prem),substituer(Pt_prem,'O',Res,Res_sub),construire_tire(Res_sub,Reste,1,L).
-construire_tire(Res,Pt,T,L):-T==0,Pt==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
+construire_tire(_,Pt,T,_):-T==0,Pt==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
 
 afficher_tire:-write([1,2,3,4,5,6,7,8,9,10]),nl,construire_tire(_,[],0,1),construire_tire(_,[],0,2),construire_tire(_,[],0,3),construire_tire(_,[],0,4),construire_tire(_,[],0,5),construire_tire(_,[],0,6),construire_tire(_,[],0,7),construire_tire(_,[],0,8),construire_tire(_,[],0,9),construire_tire(_,[],0,10).
