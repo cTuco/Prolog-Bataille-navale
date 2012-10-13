@@ -10,7 +10,7 @@ Projet Prolog 4IF : bataille navale
 
 * Positionnement des bateaux du joueur 2 : `positionner_tousJ2.`
 
-* Affichage des bateaux du joueur 1 : `afficher.`
+* Affichage des bateaux du joueur 1 : `afficher_bateauJ1.`
 
 * Affichage des coups tirés du joueur 1 : `afficher_tire.`
 
