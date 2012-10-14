@@ -181,13 +181,24 @@ couler_joueur1(Id) :- forall(bateau_joueur2(Id, X, Y), coups_tires_joueur1(X, Y)
 :- dynamic(coups_tires_joueur2/2).
 :- dynamic(bateaux_touches_joueur2/3).
 
+% construit la liste des points adjacents à X et Y sous la forme [[X+1, Y], [X-1, Y], [X, Y+1], [X-1, Y-1]]
+adjacent(X, Y, [[XPlus, Y], [XMinus, Y], [X, YPlus], [X, YMinus]]) :- XMinus is X - 1, XPlus is X + 1, YMinus is Y - 1, YPlus is Y + 1.
+
+% inutile de tirer dans une case esseulée
+evaluer_tir_alea([_, _], []) :- tirer_J2([]).
+
+evaluer_tir_alea([X, Y], [_|_]) :- tirer_J2(X, Y).
+
+% on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
+couler_joueur2(Id) :- forall(bateau_joueur1(Id, X, Y), coups_tires_joueur2(X, Y)).
+
 % on stocke tous les prédicats "bateaux_touches_joueur2" dans une liste
 tirer_J2 :- findall([X, Y], bateaux_touches_joueur2(_, X, Y), R), tirer_J2(R).
 
 % si la liste est vide on tire au hasard dans une case qui possède au moins une case adjacente où on n'a pas tiré 
 tirer_J2([]) :- random_between(1, 10, X), random_between(1, 10, Y), 
 adjacent(X, Y, LAdj), findall([XTires, YTires], coups_tires_joueur2(XTires, YTires), LCoupsTires),
-subtract(LAdj, LCoupsTires, LPossibles),
+subtract(LAdj, [[0, _], [_, 0], [11, _], [_, 11]|LCoupsTires], LPossibles),
 evaluer_tir_alea([X, Y], LPossibles).
 
 % autrement on applique une stratégie
@@ -200,18 +211,7 @@ write('Joueur 2 : tir en '), write(X), write(' * '), write(Y),
 bateau_joueur1(Id, X, Y), assert(bateaux_touches_joueur2(Id, X, Y)), write('\nTouche !'), 
 couler_joueur2(Id), write('\nCoule !\n'), retractall(bateaux_touches_joueur2(Id, _, _)), partie_terminee.
 
-% on récupère tous les points du bateau grâce à son id et on vérifie si ils sont tous dans la liste des coups_tires
-couler_joueur2(Id) :- forall(bateau_joueur1(Id, X, Y), coups_tires_joueur2(X, Y)).
-
-% inutile de tirer dans une case esseulée
-evaluer_tir_alea([_, _], []) :- tirer_J2([]).
-
-evaluer_tir_alea([X, Y], [_|_]) :- tirer_J2(X, Y).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% construit la liste des points adjacents à X et Y sous la forme [[X+1, Y], [X-1, Y], [X, Y+1], [X-1, Y-1]]
-adjacent(X, Y, [[XPlus, Y], [XMinus, Y], [X, YPlus], [X, YMinus]]) :- XMinus is X - 1, XPlus is X + 1, YMinus is Y - 1, YPlus is Y + 1.
 
 % lorsqu'il n'y a qu'un seul élément touché, on prend les points adjacents
 % on supprime les points qui se situent hors du terrain et les coups déjà tirés
