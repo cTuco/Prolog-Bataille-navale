@@ -69,7 +69,7 @@
 positionner :- positionner_tousJ1, !, write('\n'), positionner_tousJ2, !.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% choix du placement des bateaux par l utilisateur
+% choix du placement des bateaux par l' utilisateur
 
 % bateaux joueur 1 (id, ligne, colonne) : humain
 :- dynamic(bateau_joueur1/3).
@@ -92,7 +92,7 @@ positionner_t5:-write('Bateau de taille 5\n'),write('Dans quelle direction voule
 positionner_t5:-positionner_bateauV(5,5).
 
 %%%%% Positonnement horizontal d un bateau
-positionner_bateauH(T,Id):-write('Sur quelle ligne voulez vous placer le bateau ?\n'),read(L),write('Sur quelle colonne?\n'),read(C),Cbis is C + -1,positionner_pt_bateauH(Id,L,Cbis,T).
+positionner_bateauH(T,Id):-write('Sur quelle ligne voulez vous placer le bateau ?\n'),read(L),write('Sur quelle colonne(Point le plus haut)?\n'),read(C),Cbis is C + -1,positionner_pt_bateauH(Id,L,Cbis,T).
 positionner_bateauH(T,Id):-bateau_joueur1(Id,_,_),retract(bateau_joueur1(Id,_,_)),positionner_bateauH(T,Id).
 positionner_bateauH(T,Id):-positionner_bateauH(T,Id).
 
@@ -102,7 +102,7 @@ positionner_pt_bateauH(_,_,Y,_):-Ybis is Y+1,not(Ybis<11),write('Placement hors 
 positionner_pt_bateauH(_,X,Y,_):-Ybis is Y+1,bateau_joueur1(_,X,Ybis),write('Il y a deja un bateau a cet endroit\n'),false.
 
 %%%%% Positonnement vertical d un bateau
-positionner_bateauV(T,Id):-write('Sur quelle colonne voulez vous placer le bateau ?\n'),read(C),write('Sur quelle ligne?\n'),read(L),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
+positionner_bateauV(T,Id):-write('Sur quelle ligne voulez vous placer le bateau? (Point le plus a gauche?\n'),read(L),write('Sur quelle colonne voulez vous placer le bateau ?\n'),read(C),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
 positionner_bateauV(T,Id):-bateau_joueur1(Id,_,_),retract(bateau_joueur1(Id,_,_)),positionner_bateauV(T,Id).
 positionner_bateauV(T,Id):-positionner_bateauV(T,Id).
 
@@ -112,7 +112,7 @@ positionner_pt_bateauV(_,X,_,_):-Xbis is X+1,not(Xbis<11),write('Placement hors 
 positionner_pt_bateauV(_,X,Y,_):-Xbis is X+1,bateau_joueur1(_,Xbis,Y),write('Il y a deja un bateau a cet endroit\n'),false.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-% placement des bateaux de l'ordinateur
+% placement des bateaux de l ordinateur
 
 :- dynamic(bateau_joueur2/3).
 
@@ -278,7 +278,7 @@ partie_terminee([_|_], []) :- write('Partie terminee\nLe joueur 2 a gagne\n').
 %%%%%%%%%%% Affichage %%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%% Utilitaires affichage
+%%%%%%%% Utilitaires affichage'
 premelement([Prem|_],Prem).
 reste([_|Reste],Reste).
 
@@ -291,9 +291,9 @@ substituer_non_Bat(A,List):-substituer(A,'~',List,L2),X1 is A+1,substituer_non_B
 
 %%%%%%%% Affichage de tout
 
-afficher :- write('Bateaux J1 : \n'), afficher_bateauJ1, !, 
-write('\n\Coups tires J1 : \n'), afficher_tire, !, 
-write('\n\nBateaux J2 : \n'), afficher_bateauJ2, !.
+afficher :- write('Bateaux J1 :'),nl, afficher_bateauJ1, !,nl,nl, 
+write('Coups tires J1 : '), nl,afficher_tire, !,nl,nl,nl, 
+write('Bateaux J2 : '),nl,afficher_bateauJ2, !.
 
 %%%%%%%% Affichage map joueur1
 
@@ -324,7 +324,7 @@ construire_tire(_,_,T,L):-T==0,findall(Y,coups_tires_joueur1(L,Y),Pt_tire),preme
 construire_tire(_,_,T,L):-T==0,findall(Y,coups_tires_joueur1(L,Y),Pt_tire),premelement(Pt_tire,Pt_prem),reste(Pt_tire,Reste),bateau_joueur2(_,L,Pt_prem),substituer(Pt_prem,'T',[1,2,3,4,5,6,7,8,9,10],Res_sub),construire_tire(Res_sub,Reste,1,L).
 
 construire_tire(Res,Pt,T,L):-T==1,premelement(Pt,Pt_prem),reste(Pt,Reste),not(bateau_joueur2(_,L,Pt_prem)),substituer(Pt_prem,'O',Res,Res_sub),construire_tire(Res_sub,Reste,1,L).
-construire_tire(Res,Pt,T,L):-T==1,premelement(Pt,Pt_prem),reste(Pt,Reste),bateau_joueur2(_,L,Pt_prem),substituer(Pt_prem,'O',Res,Res_sub),construire_tire(Res_sub,Reste,1,L).
+construire_tire(Res,Pt,T,L):-T==1,premelement(Pt,Pt_prem),reste(Pt,Reste),bateau_joueur2(_,L,Pt_prem),substituer(Pt_prem,'T',Res,Res_sub),construire_tire(Res_sub,Reste,1,L).
 construire_tire(_,Pt,T,_):-T==0,Pt==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
 
 afficher_tire:-write([1,2,3,4,5,6,7,8,9,10]),nl,construire_tire(_,[],0,1),construire_tire(_,[],0,2),construire_tire(_,[],0,3),construire_tire(_,[],0,4),construire_tire(_,[],0,5),construire_tire(_,[],0,6),construire_tire(_,[],0,7),construire_tire(_,[],0,8),construire_tire(_,[],0,9),construire_tire(_,[],0,10).
