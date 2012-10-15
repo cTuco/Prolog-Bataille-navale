@@ -294,7 +294,8 @@ substituer_non_Bat(A,List):-substituer(A,'~',List,L2),X1 is A+1,substituer_non_B
 
 afficher :- write('Bateaux J1 :'),nl, afficher_bateauJ1, !,nl,nl, 
 write('Coups tires J1 : '), nl,afficher_tire, !,nl,nl,nl, 
-write('Bateaux J2 : '),nl,afficher_bateauJ2, !.
+write('Bateaux J2 : '),nl,afficher_bateauJ2, !,nl,nl,
+write('Coups tires J2 : '),nl,afficher_tireJ2,!.
 
 %%%%%%%% Affichage map joueur1
 
@@ -329,6 +330,20 @@ construire_tire(Res,Pt,T,L):-T==1,premelement(Pt,Pt_prem),reste(Pt,Reste),bateau
 construire_tire(_,Pt,T,_):-T==0,Pt==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
 
 afficher_tire:-write([1,2,3,4,5,6,7,8,9,10]),nl,construire_tire(_,[],0,1),construire_tire(_,[],0,2),construire_tire(_,[],0,3),construire_tire(_,[],0,4),construire_tire(_,[],0,5),construire_tire(_,[],0,6),construire_tire(_,[],0,7),construire_tire(_,[],0,8),construire_tire(_,[],0,9),construire_tire(_,[],0,10).
+
+%%%%%%%% Affichage map tir et touché J2
+
+construire_tireJ2(Res,Pt,T,_):-T==1,Pt==[],substituer_non_Bat(1,Res).
+
+construire_tireJ2(_,_,T,L):-T==0,findall(Y,coups_tires_joueur2(L,Y),Pt_tire),premelement(Pt_tire,Pt_prem),reste(Pt_tire,_),not(bateau_joueur1(_,L,Pt_prem)),substituer(Pt_prem,'O',[1,2,3,4,5,6,7,8,9,10],Res_sub),construire_tireJ2(Res_sub,Pt_tire,1,L).
+
+construire_tireJ2(_,_,T,L):-T==0,findall(Y,coups_tires_joueur2(L,Y),Pt_tire),premelement(Pt_tire,Pt_prem),reste(Pt_tire,Reste),bateau_joueur1(_,L,Pt_prem),substituer(Pt_prem,'T',[1,2,3,4,5,6,7,8,9,10],Res_sub),construire_tireJ2(Res_sub,Reste,1,L).
+
+construire_tireJ2(Res,Pt,T,L):-T==1,premelement(Pt,Pt_prem),reste(Pt,Reste),not(bateau_joueur1(_,L,Pt_prem)),substituer(Pt_prem,'O',Res,Res_sub),construire_tireJ2(Res_sub,Reste,1,L).
+construire_tireJ2(Res,Pt,T,L):-T==1,premelement(Pt,Pt_prem),reste(Pt,Reste),bateau_joueur1(_,L,Pt_prem),substituer(Pt_prem,'T',Res,Res_sub),construire_tireJ2(Res_sub,Reste,1,L).
+construire_tireJ2(_,Pt,T,_):-T==0,Pt==[],write(['~','~','~','~','~','~','~','~','~','~']),nl.
+
+afficher_tireJ2:-write([1,2,3,4,5,6,7,8,9,10]),nl,construire_tireJ2(_,[],0,1),construire_tireJ2(_,[],0,2),construire_tireJ2(_,[],0,3),construire_tireJ2(_,[],0,4),construire_tireJ2(_,[],0,5),construire_tireJ2(_,[],0,6),construire_tireJ2(_,[],0,7),construire_tireJ2(_,[],0,8),construire_tireJ2(_,[],0,9),construire_tireJ2(_,[],0,10).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
