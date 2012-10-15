@@ -6,7 +6,7 @@
 
 % bateaux joueur 1 (id, ligne, colonne) : humain
 
-% bateau 1 : 2 cases
+/*% bateau 1 : 2 cases
 bateau_joueur1(0, 7, 6).
 bateau_joueur1(0, 8, 6).
 
@@ -31,14 +31,14 @@ bateau_joueur1(4, 4, 10).
 bateau_joueur1(4, 5, 10).
 bateau_joueur1(4, 6, 10).
 bateau_joueur1(4, 7, 10).
-bateau_joueur1(4, 8, 10).
+bateau_joueur1(4, 8, 10).*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % bateaux joueur 2 (id, l, c) : ordi 
 
 % bateau 1 : 2 cases
-bateau_joueur2(0, 1, 3).
+/*bateau_joueur2(0, 1, 3).
 bateau_joueur2(0, 2, 3).
 
 % bateau 2 : 3 cases
@@ -62,7 +62,7 @@ bateau_joueur2(4, 10, 6).
 bateau_joueur2(4, 10, 7).
 bateau_joueur2(4, 10, 8).
 bateau_joueur2(4, 10, 9).
-bateau_joueur2(4, 10, 10).
+bateau_joueur2(4, 10, 10).*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % placement du joueur et de l'ordinateur
@@ -72,7 +72,7 @@ positionner :- positionner_tousJ1, !, write('\n'), positionner_tousJ2, !.
 % choix du placement des bateaux par l' utilisateur
 
 % bateaux joueur 1 (id, ligne, colonne) : humain
-%:- dynamic(bateau_joueur1/3).
+:- dynamic(bateau_joueur1/3).
 
 positionner_tousJ1:-positionner_t2,positionner_t3,positionner_t3Bis,positionner_t4,positionner_t5.
 
@@ -102,7 +102,7 @@ positionner_pt_bateauH(_,_,Y,_):-Ybis is Y+1,not(Ybis<11),write('Placement hors 
 positionner_pt_bateauH(_,X,Y,_):-Ybis is Y+1,bateau_joueur1(_,X,Ybis),write('Il y a deja un bateau a cet endroit\n'),false.
 
 %%%%% Positonnement vertical d un bateau
-positionner_bateauV(T,Id):-write('Sur quelle ligne voulez vous placer le bateau? (Point le plus a gauche?\n'),read(L),write('Sur quelle colonne voulez vous placer le bateau ?\n'),read(C),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
+positionner_bateauV(T,Id):-write('Sur quelle ligne voulez vous placer le bateau? (Point le plus a gauche)\n'),read(L),write('Sur quelle colonne voulez vous placer le bateau ?\n'),read(C),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
 positionner_bateauV(T,Id):-bateau_joueur1(Id,_,_),retract(bateau_joueur1(Id,_,_)),positionner_bateauV(T,Id).
 positionner_bateauV(T,Id):-positionner_bateauV(T,Id).
 
@@ -114,7 +114,7 @@ positionner_pt_bateauV(_,X,Y,_):-Xbis is X+1,bateau_joueur1(_,Xbis,Y),write('Il 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % placement des bateaux de l ordinateur
 
-%:- dynamic(bateau_joueur2/3).
+:- dynamic(bateau_joueur2/3).
 
 positionner_tousJ2:-write('Placement des bateaux de l ordi'),positionner_t2J2,positionner_t3J2,positionner_t3BisJ2,positionner_t4J2,positionner_t5J2.
 
@@ -135,7 +135,7 @@ positionner_t5J2:-positionner_bateauVJ2(5,5).
 
 %%%%% Positonnement horizontal d un bateau
 positionner_bateauHJ2(T,Id):-random_between(1,10,L),random_between(1,10,C),Cbis is C + -1,positionner_pt_bateauHJ2(Id,L,Cbis,T).
-positionner_bateauHJ2(T,Id):-bateau_joueur2(Id,_,_),retract(bateau_joueur2(Id,_,_)),positionner_bateauHJ2(T,Id).
+positionner_bateauHJ2(T,Id):-bateau_joueur2(Id,_,_),retractall(bateau_joueur2(Id,_,_)),positionner_bateauHJ2(T,Id).
 positionner_bateauHJ2(T,Id):-positionner_bateauHJ2(T,Id).
 
 
@@ -147,7 +147,7 @@ positionner_pt_bateauHJ2(_,X,Y,_):-Ybis is Y+1,bateau_joueur2(_,X,Ybis),false.
 
 %%%%% Positonnement vertical d un bateau
 positionner_bateauVJ2(T,Id):-random_between(1,10,C),random_between(1,10,L),Lbis is L + -1,positionner_pt_bateauVJ2(Id,Lbis,C,T).
-positionner_bateauVJ2(T,Id):-bateau_joueur2(Id,_,_),retract(bateau_joueur2(Id,_,_)),positionner_bateauVJ2(T,Id).
+positionner_bateauVJ2(T,Id):-bateau_joueur2(Id,_,_),retractall(bateau_joueur2(Id,_,_)),positionner_bateauVJ2(T,Id).
 positionner_bateauVJ2(T,Id):-positionner_bateauVJ2(T,Id).
 
 positionner_pt_bateauVJ2(_,_,_,T):-T<1.
