@@ -93,7 +93,7 @@ positionner_t5:-positionner_bateauV(5,5).
 
 %%%%% Positonnement horizontal d un bateau
 positionner_bateauH(T,Id):-write('Sur quelle ligne voulez vous placer le bateau ?\n'),read(L),write('Sur quelle colonne(Point le plus haut)?\n'),read(C),Cbis is C + -1,positionner_pt_bateauH(Id,L,Cbis,T).
-positionner_bateauH(T,Id):-bateau_joueur1(Id,_,_),retract(bateau_joueur1(Id,_,_)),positionner_bateauH(T,Id).
+positionner_bateauH(T,Id):-bateau_joueur1(Id,_,_),retractall(bateau_joueur1(Id,_,_)),positionner_bateauH(T,Id).
 positionner_bateauH(T,Id):-positionner_bateauH(T,Id).
 
 positionner_pt_bateauH(_,_,_,T):-T<1.
@@ -103,7 +103,7 @@ positionner_pt_bateauH(_,X,Y,_):-Ybis is Y+1,bateau_joueur1(_,X,Ybis),write('Il 
 
 %%%%% Positonnement vertical d un bateau
 positionner_bateauV(T,Id):-write('Sur quelle ligne voulez vous placer le bateau? (Point le plus a gauche)\n'),read(L),write('Sur quelle colonne voulez vous placer le bateau ?\n'),read(C),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
-positionner_bateauV(T,Id):-bateau_joueur1(Id,_,_),retract(bateau_joueur1(Id,_,_)),positionner_bateauV(T,Id).
+positionner_bateauV(T,Id):-bateau_joueur1(Id,_,_),retractall(bateau_joueur1(Id,_,_)),positionner_bateauV(T,Id).
 positionner_bateauV(T,Id):-positionner_bateauV(T,Id).
 
 positionner_pt_bateauV(_,_,_,T):-T<1.
