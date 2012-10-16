@@ -92,9 +92,9 @@ positionner_t5:-write('Bateau de taille 5\n'),write('Dans quelle direction voule
 positionner_t5:-positionner_bateauV(5,5).
 
 %%%%% Positonnement horizontal d un bateau
-positionner_bateauH(T,Id):-write('Sur quelle ligne voulez vous placer le bateau (Point le plus a gauche) ?\n'),read(L),write('Sur quelle colonne(Point le plus haut)?\n'),read(C),Cbis is C + -1,positionner_pt_bateauH(Id,L,Cbis,T).
-positionner_bateauH(T,Id):-bateau_joueur1(Id,_,_),retractall(bateau_joueur1(Id,_,_)),write('Placement hors du terrain ou il y a déja un bateau à cet endroit\n'),positionner_bateauH(T,Id).
-positionner_bateauH(T,Id):-write('Placement hors du terrain ou il y a déja un bateau à cet endroit\n'),positionner_bateauH(T,Id).
+positionner_bateauH(T,Id):-write('Sur quelle ligne voulez vous placer le bateau (Point le plus a gauche) ?\n'),read(L),write('Sur quelle colonne(Point le plus a gauche)?\n'),read(C),Cbis is C + -1,positionner_pt_bateauH(Id,L,Cbis,T).
+positionner_bateauH(T,Id):-bateau_joueur1(Id,_,_),retractall(bateau_joueur1(Id,_,_)),write('Placement hors du terrain ou il y a deja un bateau a cet endroit\n'),positionner_bateauH(T,Id).
+positionner_bateauH(T,Id):-write('Placement hors du terrain ou il y a deja un bateau a cet endroit\n'),positionner_bateauH(T,Id).
 
 positionner_pt_bateauH(_,_,_,T):-T<1.
 positionner_pt_bateauH(Id,X,Y,T):-Ybis is Y+1,T2 is T-1,Ybis>0,Ybis<11,X>0,X<11,not(bateau_joueur1(_,X,Ybis)),assert(bateau_joueur1(Id,X,Ybis)),positionner_pt_bateauH(Id,X,Ybis,T2).
@@ -105,9 +105,9 @@ positionner_pt_bateauH(_,_,Y,_):-Ybis is Y+1,not(Ybis<11),false.
 positionner_pt_bateauH(_,X,Y,_):-Ybis is Y+1,Ybis>0,Ybis<11,bateau_joueur1(_,X,Ybis),false.
 
 %%%%% Positonnement vertical d un bateau
-positionner_bateauV(T,Id):-write('Sur quelle ligne voulez vous placer le bateau? (Point le plus a gauche)\n'),read(L),write('Sur quelle colonne voulez vous placer le bateau (Point le plus haut)?\n'),read(C),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
-positionner_bateauV(T,Id):-bateau_joueur1(Id,_,_),retractall(bateau_joueur1(Id,_,_)),write('Placement hors du terrain ou il y a déja un bateau à cet endroit\n'),positionner_bateauV(T,Id).
-positionner_bateauV(T,Id):-write('Placement hors du terrain ou il y a déja un bateau à cet endroit\n'),positionner_bateauV(T,Id).
+positionner_bateauV(T,Id):-write('Sur quelle ligne voulez vous placer le bateau? (Point le plus haut)\n'),read(L),write('Sur quelle colonne voulez vous placer le bateau (Point le plus haut)?\n'),read(C),Lbis is L + -1,positionner_pt_bateauV(Id,Lbis,C,T).
+positionner_bateauV(T,Id):-bateau_joueur1(Id,_,_),retractall(bateau_joueur1(Id,_,_)),write('Placement hors du terrain ou il y a deja un bateau a cet endroit\n'),positionner_bateauV(T,Id).
+positionner_bateauV(T,Id):-write('Placement hors du terrain ou il y a deja un bateau a cet endroit\n'),positionner_bateauV(T,Id).
 
 positionner_pt_bateauV(_,_,_,T):-T<1.
 positionner_pt_bateauV(Id,X,Y,T):-Xbis is X+1,T2 is T-1,Xbis>0 ,Xbis<11,Y>0,Y<11,not(bateau_joueur1(_,Xbis,Y)),assert(bateau_joueur1(Id,Xbis,Y)),positionner_pt_bateauV(Id,Xbis,Y,T2).
