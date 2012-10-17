@@ -74,7 +74,7 @@ positionner :- positionner_tousJ1, !, write('\n'), positionner_tousJ2, !.
 % bateaux joueur 1 (id, ligne, colonne) : humain
 :- dynamic(bateau_joueur1/3).
 
-positionner_tousJ1:-positionner_t2,positionner_t3,positionner_t3Bis,positionner_t4,positionner_t5.
+positionner_tousJ1:-positionner_t2,afficher_bateauJ1,!,positionner_t3,afficher_bateauJ1,!,positionner_t3Bis,afficher_bateauJ1,!,positionner_t4,afficher_bateauJ1,!,positionner_t5,afficher_bateauJ1,!.
 
 positionner_t2:-write('Bateau de taille 2\n'),write('Dans quelle direction voulez vous placer le bateau Verticale/Horizontale(1/0)?\n'),read(Rep),Rep==0,positionner_bateauH(2,1).
 positionner_t2:-positionner_bateauV(2,1).
